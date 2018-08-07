@@ -3,12 +3,11 @@ package org.maxgamer.quickshop.Listeners;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +21,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.maxgamer.quickshop.QuickShop;
@@ -53,7 +53,7 @@ public class PlayerListener implements Listener {
 	 * Handles players left clicking a chest. Left click a NORMAL chest with
 	 * item : Send creation menu Left click a SHOP chest : Send purchase menu
 	 */
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onClick(PlayerInteractEvent e) {
 		if (e.getAction() != Action.LEFT_CLICK_BLOCK)
@@ -120,13 +120,14 @@ public class PlayerListener implements Listener {
 				p.sendMessage(MsgUtil.getMessage("no-double-chests"));
 				return;
 			}
-			if (Util.isBlacklisted(item.getType()) && !p.hasPermission("quickshop.bypass." + item.getTypeId())) {
+			if (Util.isBlacklisted(item.getType()) && !p.hasPermission("quickshop.bypass." + item.getType().name())) {
 				p.sendMessage(MsgUtil.getMessage("blacklisted-item"));
 				return;
 			}
 			// Finds out where the sign should be placed for the shop
 			Block last = null;
 			Location from = p.getLocation().clone();
+			plugin.getLogger().info("player Location " + from.toString());
 			from.setY(b.getY());
 			from.setPitch(0);
 			BlockIterator bIt = new BlockIterator(from, 0, 7);
@@ -136,6 +137,7 @@ public class PlayerListener implements Listener {
 					break;
 				last = n;
 			}
+			plugin.getLogger().info("sign/chest Location " + last.toString());
 			// Send creation menu.
 			Info info = new Info(b.getLocation(), ShopAction.CREATE, e.getItem(), last);
 			plugin.getShopManager().getActions().put(p.getUniqueId(), info);
@@ -209,11 +211,25 @@ public class PlayerListener implements Listener {
 			if (inventory == null) {
 				return;
 			}
-			
-			final Location location = inventory.getLocation();
-			if (location == null) {
-				return;
+
+			Inventory i = e.getInventory();
+			InventoryHolder h = i.getHolder();
+			Location tLocation = null;
+			if(h instanceof Chest)
+			{
+				Chest c =(Chest) h;
+				tLocation = c.getLocation();
 			}
+			else if( h instanceof DoubleChest){
+				DoubleChest dc = (DoubleChest)h;
+				tLocation = dc.getLocation();
+			}
+
+				final Location location = tLocation;
+				if (location == null) {
+					return;
+				}
+
 			
 			final Shop shop = plugin.getShopManager().getShop(location);
 			if (shop == null) {

@@ -89,7 +89,7 @@ shop:
 
 #List of items to disallow selling of.  Anyone with quickshop.bypass.<itemID> can bypass it    
 blacklist:
-- 7 #Bedrock
+- BEDROCK #Bedrock
     
     
 #List of items with restricted prices. Format: <ItemID>;<MinPrice>;<MaxPrice>

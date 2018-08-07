@@ -15,11 +15,13 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Sign;
+
 import org.bukkit.plugin.RegisteredListener;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.Database.Database;
@@ -368,12 +370,22 @@ public class ShopManager {
 						// Figures out which way we should put the sign on and
 						// sets its text.
 						if (info.getSignBlock() != null && info.getSignBlock().getType() == Material.AIR && plugin.getConfig().getBoolean("shop.auto-sign")) {
-							BlockState bs = info.getSignBlock().getState();
+
+							Location l = info.getSignBlock().getLocation();
+							Block block = plugin.getServer().getWorld(l.getWorld().getName()).getBlockAt(info.getSignBlock().getLocation());
+							block.setType(Material.WALL_SIGN);
+							Sign sign = (Sign) block.getState(); //
+							plugin.getLogger().info("Sign work: Info name: " + info.getLocation().getBlock().getType().name());
+
 							BlockFace bf = info.getLocation().getBlock().getFace(info.getSignBlock());
-							bs.setType(Material.WALL_SIGN);
-							Sign sign = (Sign) bs.getData();
-							sign.setFacingDirection(bf);
-							bs.update(true);
+
+							//Set Direction for the SIgn
+							BlockData sBd =   sign.getBlockData();
+							org.bukkit.block.data.Directional ss = (org.bukkit.block.data.Directional) sBd;
+							ss.setFacing(bf);
+							sign.setBlockData(ss);
+
+							sign.update(true);
 							shop.setSignText();
 							/*
 							 * Block b = shop.getLocation().getBlock();
