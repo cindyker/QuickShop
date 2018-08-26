@@ -23,6 +23,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Sign;
 import org.bukkit.potion.Potion;
@@ -935,6 +936,24 @@ public class Util {
 				}
 			} else {
 				return false; // one of the item stacks have a display name
+			}
+		}
+		if(stack1.getItemMeta().equals(stack2.getItemMeta())){
+			if(NMS.isPotion(stack1.getType())||NMS.isPotion(stack2.getType())) {
+				PotionMeta pm1 = (PotionMeta) stack1.getItemMeta();
+				PotionMeta pm2 = (PotionMeta) stack2.getItemMeta();
+				if (pm1.hasCustomEffects()) {
+					if (pm1.getCustomEffects().size() != pm2.getCustomEffects().size())
+						return false;
+					for (PotionEffect pe1 : pm1.getCustomEffects()) {
+						plugin.getLogger().info("pe1: " + pe1.getType().getName() + " " + pe1.getDuration());
+						PotionEffect pe2 = pm2.getCustomEffects().get(pm2.getCustomEffects().indexOf(pe1));
+						plugin.getLogger().info("pe2: "+  pe2.getType().getName() + " " + pe2.getDuration());
+						if (!pm2.getCustomEffects().contains(pe1))
+							return false;
+					}
+				}
+				plugin.getLogger().info("We have the SAME item META");
 			}
 		}
 		try {

@@ -277,7 +277,7 @@ public class ShopManager {
 		final String message = ChatColor.stripColor(msg);
 		// Use from the main thread, because Bukkit hates life
 		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			@SuppressWarnings("deprecation")
+
 			@Override
 			public void run() {
 				HashMap<UUID, Info> actions = getActions();
@@ -331,7 +331,7 @@ public class ShopManager {
 						double tax = plugin.getConfig().getDouble("shop.cost");
 						// Tax refers to the cost to create a shop. Not actual
 						// tax, that would be silly
-						if (tax != 0 && plugin.getEcon().getBalance(p.getName()) < tax) {
+						if (tax != 0 && plugin.getEcon().getBalance(p.getUniqueId()) < tax) {
 							p.sendMessage(MsgUtil.getMessage("you-cant-afford-a-new-shop", format(tax)));
 							return;
 						}
@@ -348,7 +348,7 @@ public class ShopManager {
 						// Else, if the event is cancelled, they won't get their
 						// money back.
 						if (tax != 0) {
-							if (!plugin.getEcon().withdraw(p.getName(), tax)) {
+							if (!plugin.getEcon().withdraw(p.getUniqueId(), tax)) {
 								p.sendMessage(MsgUtil.getMessage("you-cant-afford-a-new-shop", format(tax)));
 								shop.onUnload();
 								return;

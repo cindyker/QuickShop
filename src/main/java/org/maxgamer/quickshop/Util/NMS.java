@@ -95,28 +95,38 @@ public class NMS {
 				if(potionItemStack.hasItemMeta())
 					potionMeta = (PotionMeta) potionItemStack.getItemMeta();
 
-				Category category = getPotionData(potionItemStack).getCategory();
+				Category category = Category.NORMAL;
+				if(potionItemStack.getType() == Material.LINGERING_POTION)
+					category = Category.LINGERING;
+				if(potionItemStack.getType() == Material.SPLASH_POTION)
+					category = Category.SPLASH;
 
 				List<PotionEffect> effects = new ArrayList<PotionEffect>(potionMeta.getCustomEffects().size()+1);
 
+				//ToDo: Fix this... Duration and Amplifier is per effect.
+				// I think potions can have more than one effect by the looks of this.
+				int duration = 0;
+				int amplifier = 0;
 				if (potionMeta.hasCustomEffects()) {
 					effects.addAll(potionMeta.getCustomEffects());
+					duration = effects.get(0).getDuration();
+					amplifier = effects.get(0).getAmplifier();
 				}
+				PotionType potionType = potionMeta.getBasePotionData().getType();
 
-				PotionType potionType = getPotionData(potionItemStack).getType();
 						//potionMeta..getBasePotionData().getType();
 
 
 				//GenericPotionData(PotionType type, Collection<PotionEffect> effects, Category category, boolean isCustom, int duration, int amplifier)
-				return new GenericPotionData(potionType, effects, category, getPotionData(potionItemStack).isCustom(), getPotionData(potionItemStack).getDuration(), getPotionData(potionItemStack).getAmplifier());
+				return new GenericPotionData(potionType, effects, category, potionMeta.hasCustomEffects(), duration, amplifier);
 			}
 
 			@Override
 			public boolean isPotion(Material material) {
 				switch(material) {
 					case POTION:
-				//	case SPLASH_POTION:
-				//	case LINGERING_POTION:
+					case SPLASH_POTION:
+				    case LINGERING_POTION:
 						return true;
 					default:
 						return false;

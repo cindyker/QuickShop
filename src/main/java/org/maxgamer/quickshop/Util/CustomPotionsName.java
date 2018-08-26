@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.maxgamer.quickshop.QuickShop;
 
 public class CustomPotionsName {
 	private static Map<PotionType,Names> potionTypes;
@@ -122,7 +123,8 @@ public class CustomPotionsName {
 		if (sb.length()>0) {
 			sb.setLength(sb.length()-3);
 		}
-		
+
+		QuickShop.instance.getLogger().info("Potion Effect - "+potionItemStack.getItemMeta().getDisplayName()+" - "+sb.toString());
 		return sb.toString();
 	}
 
